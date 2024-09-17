@@ -1,0 +1,71 @@
+version: "3.8"
+
+services:
+  admin_api:
+    container_name: admin_service
+    build:
+      context: ./admin_api
+      dockerfile: Dockerfile
+    ports:
+      - "8300:8000"
+      
+    depends_on:
+      - postgres
+      - rabbitmq
+    volumes:
+      - ./admin_api:/app
+    command:
+      sh -c "python manage.py runserver 0.0.0.0:8000"
+    networks:
+      - library-network
+
+  frontend_api:
+    container_name: frontend_service
+    build:
+      context: ./frontend_api
+      dockerfile: Dockerfile
+    ports:
+      - "8400:8000"
+
+    depends_on:
+      - postgres
+      - rabbitmq
+    volumes:
+      - ./frontend_api:/app
+    command:
+      sh -c "python manage.py runserver 0.0.0.0:8000"
+    networks:
+      - library-network
+
+  postgres:
+    container_name: postgres_service
+    restart: always
+    image: postgres:13-alpine
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=admin_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - library-network
+
+  rabbitmq:
+    image: rabbitmq:management-alpine
+    restart: always
+    container_name: rabbitmq_service
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - library-network
+
+
+networks:
+  library-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+
+

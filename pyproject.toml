@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "cowrywise-backend-assessment"
+version = "0.1.0"
+description = ""
+authors = ["Ayobami Alaran A. <ayobamidele006@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+sparky-utils = "^1.0.9"
+django-cors-headers = "^4.4.0"
+
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.3"
+pytest-django = "^4.9.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
