@@ -1,6 +1,20 @@
-.PHONY: run
-run:
-	@python manage.py runserver $(port)
+.PHONY: run-admin
+run-admin:
+	@docker-compose up postgres -d
+	@docker-compose up rabbitmq -d
+	@docker-compose up admin_api 
+
+run-library:
+	@docker-compose up -d
+
+run-frontend:
+	@docker-compose up postgres -d 
+	@docker-compose up rabbitmq -d
+	@docker-compose up frontend_api 
+
+test-admin:
+	@cd admin_api/
+	@pytest
 
 install:
 	@pip install $(package)

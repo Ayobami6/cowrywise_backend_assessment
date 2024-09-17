@@ -28,7 +28,6 @@ services:
       - "8400:8000"
 
     depends_on:
-      - postgres
       - rabbitmq
     volumes:
       - ./frontend_api:/app
@@ -49,6 +48,8 @@ services:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - library-network
+    ports:
+      - "5433:5432"
 
   rabbitmq:
     image: rabbitmq:management-alpine
