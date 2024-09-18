@@ -19,6 +19,19 @@ services:
     networks:
       - library-network
 
+  admin_consumer:
+    build:
+      context: ./admin_api
+      dockerfile: Dockerfile
+      depends_on:
+      - rabbitmq_service
+      - postgres_service
+    volumes:
+      - ./admin_api:/app
+    command: "python consumer.py"
+    networks:
+      - library-network
+
   frontend_api:
     container_name: frontend_service
     build:
@@ -33,6 +46,18 @@ services:
       - ./frontend_api:/app
     command:
       sh -c "python manage.py runserver 0.0.0.0:8000"
+    networks:
+      - library-network
+
+  frontend_consumer:
+    build:
+      context: ./frontend_api
+      dockerfile: Dockerfile
+      depends_on:
+      - rabbitmq_service
+    volumes:
+      - ./frontend_api:/app
+    command: "python consumer.py"
     networks:
       - library-network
 
