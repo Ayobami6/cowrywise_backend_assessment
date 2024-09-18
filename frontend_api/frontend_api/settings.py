@@ -40,10 +40,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # third party libraries
-    "rest_framework"
-    "corsheaders"
+    "rest_framework",
+    "corsheaders",
     # django application
-    "api"
+    "api",
 ]
 
 MIDDLEWARE = [
@@ -87,6 +87,7 @@ DATABASES = {
     }
 }
 
+AUTH_USER_MODEL = "api.User"
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
