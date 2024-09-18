@@ -1,18 +1,29 @@
-from config import channel
+import pika
+import sys
+import os
 
-channel.queue_declare(queue="add-book")
+
+def main():
+    connection = pika.BlockingConnection(pika.ConnectionParameters(host='rabbitmq'))
+    channel = connection.channel()
+
+    channel.queue_declare(queue='add-book')
+
+    def callback(ch, method, properties, body):
+        print(f" [x] Received {body}")
+
+    channel.basic_consume(queue='add-book', on_message_callback=callback, auto_ack=True)
+
+    print(' [*] Waiting for messages. To exit press CTRL+C')
+    channel.start_consuming()
 
 
-def callback(ch, method, properties, body):
-    print("Messaged received")
-    print(body)
-    
-
-channel.basic_consume(queue="add-book", on_message_callback=callback, auto_ack=True)
-
-print("Waiting for messages from producer.... press Ctrl + C to cancel")
-
-channel.start_consuming()
-
-channel.close()
-
+if __name__ == '__main__':
+    try:
+        main()
+    except KeyboardInterrupt:
+        print('Interrupted')
+        try:
+            sys.exit(0)
+        except SystemExit:
+            os._exit(0)

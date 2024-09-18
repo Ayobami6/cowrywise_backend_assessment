@@ -23,12 +23,13 @@ services:
     build:
       context: ./admin_api
       dockerfile: Dockerfile
-      depends_on:
-      - rabbitmq_service
-      - postgres_service
+    depends_on:
+      - rabbitmq
+      - postgres
+    command:
+      sh -c "python consumer.py"
     volumes:
       - ./admin_api:/app
-    command: "python consumer.py"
     networks:
       - library-network
 
@@ -53,11 +54,12 @@ services:
     build:
       context: ./frontend_api
       dockerfile: Dockerfile
-      depends_on:
-      - rabbitmq_service
+    depends_on:
+      - rabbitmq
     volumes:
       - ./frontend_api:/app
-    command: "python consumer.py"
+    command: 
+      sh -c "python consumer.py"
     networks:
       - library-network
 

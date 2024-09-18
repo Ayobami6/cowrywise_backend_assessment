@@ -1,9 +1,15 @@
 import pika
 
-params = pika.URLParameters("amqps://guest:guest@rabbitmq_service:5672/")
+params = pika.ConnectionParameters(
+    host='rabbitmq',
+    port=5672,
+    credentials=pika.PlainCredentials('guest', 'guest'),
+    ssl_options=None
+)
 
 connection = pika.BlockingConnection(params)
 
 channel = connection.channel()
 
 
+print("Channel Created!")
