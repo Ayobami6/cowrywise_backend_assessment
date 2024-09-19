@@ -11,7 +11,7 @@ services:
       
     depends_on:
       - postgres
-      - rabbitmq
+      - redis
     volumes:
       - ./admin_api:/app
     command:
@@ -24,10 +24,10 @@ services:
       context: ./admin_api
       dockerfile: Dockerfile
     depends_on:
-      - rabbitmq
+      - redis
       - postgres
-    command:
-      sh -c "python consumer.py"
+    command: 
+      sh -c "python manage.py startconsumer"
     volumes:
       - ./admin_api:/app
     networks:
@@ -42,7 +42,7 @@ services:
       - "8400:8000"
 
     depends_on:
-      - rabbitmq
+      - redis
     volumes:
       - ./frontend_api:/app
     command:
@@ -54,12 +54,13 @@ services:
     build:
       context: ./frontend_api
       dockerfile: Dockerfile
+    restart: always
     depends_on:
-      - rabbitmq
+      - redis
     volumes:
       - ./frontend_api:/app
     command: 
-      sh -c "python consumer.py"
+      sh -c "python manage.py startconsumer"
     networks:
       - library-network
 
@@ -78,6 +79,17 @@ services:
     ports:
       - "5433:5432"
 
+  redis:
+    container_name: redis_service
+    image: redis:alpine
+    restart: always
+    ports:
+      - "6380:6379"
+    volumes:
+      - rdb:/redis
+    networks:
+      - library-network
+
   rabbitmq:
     image: rabbitmq:management-alpine
     restart: always
@@ -93,7 +105,9 @@ networks:
   library-network:
     driver: bridge
 
+
 volumes:
   postgres_data:
+  rdb:
 
 

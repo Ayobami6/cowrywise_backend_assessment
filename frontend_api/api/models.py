@@ -111,3 +111,6 @@ class BorrowedBookLog(models.Model):
     
     
     
+def save_user(data):
+    user = User.objects.create_user(email=data["email"], password=data["password"], first_name=data["first_name"], last_name=data["last_name"])
+    return user

@@ -1,20 +1,21 @@
 .PHONY: run-admin
 run-admin:
 	@docker-compose up postgres -d
-	@docker-compose up rabbitmq -d
 	@docker-compose up admin_api 
 
 run-library:
-	@docker-compose up -d
+	@docker-compose up admin_api 
+	@docker-compose up frontend_api
 
 stop-library:
 	@docker-compose down
 
 run-frontend:
 	@docker-compose up postgres -d 
-	@docker-compose up rabbitmq -d
-	@docker-compose up frontend_consumer 
 	@docker-compose up frontend_api 
+
+start-consumers:
+	@docker-compose run frontend_consumer
 
 test-admin:
 	@cd admin_api/

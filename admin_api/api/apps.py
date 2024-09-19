@@ -6,5 +6,5 @@ class ApiConfig(AppConfig):
     name = 'api'
     
     # def ready(self) -> None:
-    #     from .consumer import consume
-    #     consume()
+    #     from .subscriber import listen_save_user_event
+    #     listen_save_user_event()
