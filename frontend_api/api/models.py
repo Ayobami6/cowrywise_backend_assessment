@@ -105,7 +105,7 @@ class Book(models.Model):
 @str_meta    
 class BorrowedBookLog(models.Model):
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
-    borrower = models.ForeignKey(User, on_delete=models.CASCADE)
+    borrower = models.ForeignKey(User, on_delete=models.CASCADE, related_name="borrowed_books")
     borrow_date = models.DateField(default=timezone.now)
     return_date = models.DateField()
     

@@ -14,7 +14,10 @@ run-frontend:
 	@docker-compose up postgres -d 
 	@docker-compose up frontend_api 
 
-start-consumers:
+admin-consumer:
+	@docker-compose run admin_consumer
+
+frontend_consumer:
 	@docker-compose run frontend_consumer
 
 test-admin:

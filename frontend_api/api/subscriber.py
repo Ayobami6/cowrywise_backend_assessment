@@ -12,7 +12,6 @@ print("After redis connection")
 
 # listen to add book to db
 def listen_save_user_event():
-    print("Waiting for messages")
     pubsub = r.pubsub()
     pubsub.subscribe('add-book')
     
@@ -26,12 +25,6 @@ def save_user_to_database(user_data):
     user = User.objects.create_user(email=data["email"], password=data["password"], first_name=data["first_name"], last_name=data["last_name"])
     print(f"Saved user data!!: {user}")
 
-
-# def start_listener():
-#     listener_thread = threading.Thread(target=listen_save_user_event)
-#     listener_thread.daemon = True
-#     listener_thread.start()
-
-# if __name__ == '__main__':
-#     listen_save_user_event()
-   
+def start_listening():
+    print("Waiting for messages from publishers.... press Ctrl+C to cancel")
+    listen_save_user_event()
