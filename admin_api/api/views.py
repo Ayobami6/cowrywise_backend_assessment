@@ -42,6 +42,7 @@ class BookNotAvailableListAPIView(APIView):
     """List all books not available
     """
     serializer_class = GetBookSerializer
+    
     @exception_advice
     def get(self, request, *args, **kwargs):
         """Get handler to list all books not available
@@ -71,3 +72,18 @@ class ListUsersAPIView(APIView):
              
 
 #TODO: delete a book and persist in the frontend service Db
+class DeleteBookAPIView(APIView):
+    """Delete a book
+    """
+    
+    @exception_advice
+    def delete(self, request, *args, **kwargs):
+        """Delete handler to delete a book
+        """
+        book_id = kwargs.get('id')
+        book = Book.objects.get(id=book_id)
+        book.delete()
+        # publish delete book event
+        return service_response(
+            status="success", message="Book deleted successfully", status_code=204
+        )
