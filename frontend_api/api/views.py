@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from sparky_utils.response import service_response
 from .serializers import BookSerializer, CreateUserSerializer
-from utils.exceptions import exception_advice
+from utils.advice import exception_advice
 import json
 from .publisher import publish_save_user_event
 from rest_framework import viewsets
@@ -61,3 +61,12 @@ class BookAPIViewSet(viewsets.ModelViewSet):
         
         serializer = self.serializer_class(books, many=True)
         return service_response(status="success", message="Book Fetched Successfully", data=serializer.data, status_code=200)
+    
+    
+    @exception_advice
+    def retrieve(self, request, *args, **kwargs):
+        # id = kwargs.get('id')
+        book = Book.objects.get(id=kwargs.get('id'))
+        serializer = self.serializer_class(book)
+        return service_response(status="success", message="Book Fetched Successfully", data=serializer.data, status_code=200)
+        

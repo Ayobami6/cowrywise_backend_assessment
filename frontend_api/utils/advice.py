@@ -5,6 +5,7 @@ from sparky_utils.response import service_response
 from .exceptions import ServiceException
 from sparky_utils.exceptions import handle_internal_server_exception
 from django.core.exceptions import ValidationError
+from django.core.exceptions import ObjectDoesNotExist
 
 
 def exception_advice(func):
@@ -25,6 +26,8 @@ def exception_advice(func):
                 return service_response(status="error", message=e.message, status_code=e.status_code)
             elif isinstance(e, ValidationError):
                 return service_response(status="error", message=e.message, status_code=400)
+            elif isinstance(e, ObjectDoesNotExist):
+                return service_response(status="error", message=str(e), status_code=404)
             else:
                 return handle_internal_server_exception()
     return wrapper

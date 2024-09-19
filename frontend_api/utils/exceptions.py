@@ -11,17 +11,3 @@ class ServiceException(Exception):
         self.message = message
         self.status_code = status_code
         
-
-
-def exception_advice(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        try:
-            return func(*args, **kwargs)
-        except Exception as e:
-            if isinstance(e, ServiceException):
-                return service_response(status="error", message=e.message, status_code=e.status_code)
-            else:
-                return handle_internal_server_exception()
-            
-    return wrapper
