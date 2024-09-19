@@ -1,6 +1,11 @@
 import redis
 import threading
 import time
+import json
+from django.contrib.auth import get_user_model
+
+
+User = get_user_model()
 
 r = redis.Redis(host="redis_service", port=6379)
 
@@ -18,7 +23,9 @@ def listen_save_user_event():
             save_user_to_database(user_data)
             
 def save_user_to_database(user_data):
-    print(f"Saved user data: {user_data}")
+    data = json.loads(user_data)
+    user = User.objects.create_user(email=data["email"], password=data["password"], first_name=data["first_name"], last_name=data["last_name"])
+    print(f"Saved user data!!: {user}")
 
 
 def start_listening():
