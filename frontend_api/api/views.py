@@ -29,9 +29,9 @@ class EnrollUserAPIView(APIView):
         """
         serializer: CreateUserSerializer = self.serializer_class(data=request.data)   
         if serializer.is_valid():
-            saved_user = serializer.save()
+            serializer.save()
             # publish the serializer.data
-            publish_save_user_event(json.dumps(saved_user))
+            publish_save_user_event(json.dumps(serializer.data))
             return service_response(
                 status="success",
                 message="User enrolled successfully!",

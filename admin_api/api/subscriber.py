@@ -25,6 +25,7 @@ def listen_save_user_event():
 def save_user_to_database(user_data):
     data = json.loads(user_data)
     user = User.objects.create_user(email=data["email"], password=data["password"], first_name=data["first_name"], last_name=data["last_name"])
+    user.save()
     print(f"Saved user data!!: {user}")
 
 
