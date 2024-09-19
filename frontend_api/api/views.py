@@ -4,10 +4,11 @@ from sparky_utils.response import service_response
 from .serializers import BookSerializer, CreateUserSerializer
 from utils.advice import exception_advice
 import json
-from .publisher import publish_save_user_event
+from .publisher import publish_save_user_event, publish_log_borrow_book
 from rest_framework import viewsets
-from .models import Book
+from .models import Book, User, BorrowedBookLog
 from django.db.models import Q
+from datetime import timedelta, datetime
 # Create your views here.
 
 
@@ -38,6 +39,7 @@ class EnrollUserAPIView(APIView):
             return service_response(
                 status="success",
                 message="User enrolled successfully!",
+                data=serializer.data,
                 status_code=201,
             )   
         return service_response(status="error", message=serializer.errors, status_code=400)
@@ -68,4 +70,56 @@ class BookAPIViewSet(viewsets.ModelViewSet):
         book = Book.objects.get(id=kwargs.get('pk'))
         serializer = self.serializer_class(book)
         return service_response(status="success", message="Book Fetched Successfully", data=serializer.data, status_code=200)
+
+
+class BorrowBookAPIView(APIView):
+    """User Books Borrowing Api handler
+    """
+    
+    @exception_advice
+    def get(self, request, *args, **kwargs):
+        """Get handler to handle book borrowing requests
+        """
+        # get book id
+        book_id = kwargs.get('id')
+        # get user id
+        user_id = request.data.get('user_id')
+        duration = request.data.get('duration')
+        # check if book exists
+        book = Book.objects.filter(id=book_id).first()
+        if not book:
+            return service_response(status="error", message="Book not found", status_code=404)
         
+        # check if user exists
+        user = User.objects.filter(id=user_id).first()
+        if not user:
+            return service_response(status="error", message="You are not enrolled to the library", status_code=404)
+        
+        # check if user has borrowed the book
+        if not book.available:
+            return service_response(status="error", message="User has already borrowed this book", status_code=409)
+        
+        # borrow the book
+        now = datetime.today()
+        return_date = now + timedelta(days=int(duration))
+        book.available = False
+        book.available_date = return_date
+        book.save()
+        # create log
+        log_data = {
+            "book": book,
+            "borrower": user,
+            "borrow_date": now,
+            "return_date": return_date,
+        }
+        BorrowedBookLog.objects.create(**log_data)
+        event_data = {
+            "book": book.id,
+            "borrower": user.id,
+            "borrow_date": now,
+            "return_date": return_date,
+            
+        }
+        # publish log_data
+        publish_log_borrow_book(event_data)
+        return service_response(status="success", message="Book borrowed successfully", data=book.id, status_code=200)
