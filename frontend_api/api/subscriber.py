@@ -3,6 +3,7 @@ import threading
 import time
 import json
 from django.contrib.auth import get_user_model
+from .models import Book, Category
 
 User = get_user_model()
 
@@ -22,7 +23,9 @@ def listen_add_book_event():
             
 def save_book_to_database(book_data):
     data = json.loads(book_data)
-    print(f"Saved book data!!: {data}")
+    category = Category.objects.get(id=int(data['category']))
+    book = Book.objects.create(title=data['title'], author=data['author'], category=category, publisher=data['publisher'])
+    print(f"Saved book data!!: {book}")
 
 def start_listening():
     print("Waiting for messages from publishers.... press Ctrl+C to cancel")

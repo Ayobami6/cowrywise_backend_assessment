@@ -65,8 +65,7 @@ class BookAPIViewSet(viewsets.ModelViewSet):
     
     @exception_advice
     def retrieve(self, request, *args, **kwargs):
-        # id = kwargs.get('id')
-        book = Book.objects.get(id=kwargs.get('id'))
+        book = Book.objects.get(id=kwargs.get('pk'))
         serializer = self.serializer_class(book)
         return service_response(status="success", message="Book Fetched Successfully", data=serializer.data, status_code=200)
         
