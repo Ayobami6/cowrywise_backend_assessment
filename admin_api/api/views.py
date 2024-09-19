@@ -69,4 +69,5 @@ class ListUsersAPIView(APIView):
             status="success", message="List of users and their borrowed books", data=serializer.data, status_code=200
         )
              
-        
+
+#TODO: delete a book and persist in the frontend service Db

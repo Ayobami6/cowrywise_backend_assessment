@@ -9,6 +9,7 @@ from rest_framework import viewsets
 from .models import Book, User, BorrowedBookLog
 from django.db.models import Q
 from datetime import timedelta, datetime, date
+from rest_framework.exceptions import MethodNotAllowed
 # Create your views here.
 
 
@@ -72,6 +73,20 @@ class BookAPIViewSet(viewsets.ModelViewSet):
         book = Book.objects.get(id=kwargs.get('pk'))
         serializer = self.serializer_class(book)
         return service_response(status="success", message="Book Fetched Successfully", data=serializer.data, status_code=200)
+    
+    
+    def create(self, request, *args, **kwargs):
+        raise MethodNotAllowed(request.method)
+    
+    def update(self, request, *args, **kwargs):
+        raise MethodNotAllowed(request.method)
+    
+    def partial_update(self, request, *args, **kwargs):
+        raise MethodNotAllowed(request.method)
+    
+    def destroy(self, request, *args, **kwargs):
+        raise MethodNotAllowed(request.method)
+        
 
 
 class BorrowBookAPIView(APIView):
