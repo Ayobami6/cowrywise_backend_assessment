@@ -5,6 +5,7 @@ import json
 from django.contrib.auth import get_user_model
 from typing import Any
 from .models import Book, BorrowedBookLog
+from datetime import datetime
 
 
 User = get_user_model()
@@ -38,7 +39,9 @@ def log_borrowed_book(event_data: Any):
     data = json.loads(event_data)
     book = Book.objects.get(id=int(data['book']))
     borrower = User.objects.get(id=int(data['borrower']))
-    BorrowedBookLog.objects.create(book=book, borrower=borrower, borrow_date=data['borrow_date'], return_date=data['return_date'])
+    borrow_date = datetime.strptime(data["borrow_date"], '%Y-%m-%d').date()
+    return_date = datetime.strptime(data["return_date"], '%Y-%m-%d').date()
+    BorrowedBookLog.objects.create(book=book, borrower=borrower, borrow_date=borrow_date, return_date=return_date)
     print(f"Logged borrowed book: {book} for user: {borrower}")
     
 

@@ -9,3 +9,4 @@ def publish_save_user_event(event_data: Any) -> None:
 
 def publish_log_borrow_book(log_data: Any) -> None:
     r.publish("log-borrow-book", log_data)
+    

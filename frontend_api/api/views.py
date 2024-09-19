@@ -8,7 +8,7 @@ from .publisher import publish_save_user_event, publish_log_borrow_book
 from rest_framework import viewsets
 from .models import Book, User, BorrowedBookLog
 from django.db.models import Q
-from datetime import timedelta, datetime
+from datetime import timedelta, datetime, date
 # Create your views here.
 
 
@@ -36,10 +36,12 @@ class EnrollUserAPIView(APIView):
             serializer.save()
             # publish the serializer.data
             publish_save_user_event(json.dumps(serializer.data))
+            data = serializer.data
+            data.pop("password")
             return service_response(
                 status="success",
                 message="User enrolled successfully!",
-                data=serializer.data,
+                data=data,
                 status_code=201,
             )   
         return service_response(status="error", message=serializer.errors, status_code=400)
@@ -77,8 +79,8 @@ class BorrowBookAPIView(APIView):
     """
     
     @exception_advice
-    def get(self, request, *args, **kwargs):
-        """Get handler to handle book borrowing requests
+    def post(self, request, *args, **kwargs):
+        """Post handler to handle book borrowing requests
         """
         # get book id
         book_id = kwargs.get('id')
@@ -100,7 +102,7 @@ class BorrowBookAPIView(APIView):
             return service_response(status="error", message="User has already borrowed this book", status_code=409)
         
         # borrow the book
-        now = datetime.today()
+        now = date.today()
         return_date = now + timedelta(days=int(duration))
         book.available = False
         book.available_date = return_date
@@ -116,10 +118,10 @@ class BorrowBookAPIView(APIView):
         event_data = {
             "book": book.id,
             "borrower": user.id,
-            "borrow_date": now,
-            "return_date": return_date,
+            "borrow_date": str(now),
+            "return_date": str(return_date),
             
         }
         # publish log_data
-        publish_log_borrow_book(event_data)
+        publish_log_borrow_book(json.dumps(event_data))
         return service_response(status="success", message="Book borrowed successfully", data=book.id, status_code=200)
