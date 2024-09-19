@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
+from .models import Book
 
 
 User = get_user_model()
@@ -21,7 +22,10 @@ class CreateUserSerializer(serializers.ModelSerializer):
         user = User.objects.create_user(email=email, password=password, first_name=first_name, last_name=last_name)
         return user
         
-        
+class BookSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Book
+        fields = "__all__"
         
         
         
