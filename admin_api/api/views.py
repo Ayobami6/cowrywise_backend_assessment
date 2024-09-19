@@ -3,7 +3,7 @@ from sparky_utils.response import service_response
 from rest_framework.views import APIView
 import json
 # from .producer import publish
-from .publisher import publish_save_book_event
+from .publisher import publish_save_book_event, publish_delete_event
 from utils.advice import exception_advice
 from .serializers import AddBookSerializer, GetBookSerializer, GetUserSerializer
 from .models import Book, User
@@ -84,6 +84,10 @@ class DeleteBookAPIView(APIView):
         book = Book.objects.get(id=book_id)
         book.delete()
         # publish delete book event
+        event_data = {
+            "id": book_id
+        }
+        publish_delete_event(json.dumps(event_data))
         return service_response(
             status="success", message="Book deleted successfully", status_code=204
         )
