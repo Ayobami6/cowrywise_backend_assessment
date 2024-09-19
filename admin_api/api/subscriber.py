@@ -41,6 +41,9 @@ def log_borrowed_book(event_data: Any):
     borrower = User.objects.get(id=int(data['borrower']))
     borrow_date = datetime.strptime(data["borrow_date"], '%Y-%m-%d').date()
     return_date = datetime.strptime(data["return_date"], '%Y-%m-%d').date()
+    book.available = False
+    book.available_date = return_date
+    book.save()
     BorrowedBookLog.objects.create(book=book, borrower=borrower, borrow_date=borrow_date, return_date=return_date)
     print(f"Logged borrowed book: {book} for user: {borrower}")
     

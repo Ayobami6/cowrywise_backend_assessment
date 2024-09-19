@@ -13,3 +13,8 @@ class AddBookSerializer(serializers.ModelSerializer):
         fields = ('title', 'author', 'publisher', 'category')
         
         
+class GetBookSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = Book
+        fields = "__all__"

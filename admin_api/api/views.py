@@ -5,7 +5,8 @@ import json
 # from .producer import publish
 from .publisher import publish_save_book_event
 from utils.advice import exception_advice
-from .serializers import AddBookSerializer
+from .serializers import AddBookSerializer, GetBookSerializer
+from .models import Book
 
 # Create your views here.
 
@@ -35,3 +36,20 @@ class AddBookAPIView(APIView):
                 status="success", message="Book added successfully", data=serializer.data, status_code=201
             )
         return service_response(status="success", message=serializer.errors, status_code=400)
+
+
+class BookNotAvailableListAPIView(APIView):
+    """List all books not available
+    """
+    serializer_class = GetBookSerializer
+    @exception_advice
+    def get(self, request, *args, **kwargs):
+        """Get handler to list all books not available
+        """
+        # filter books not available
+        books_not_available = Book.objects.filter(available=False)
+        serializer = self.serializer_class(books_not_available, many=True)
+        return service_response(
+            status="success", message="List of books not available", data=serializer.data, status_code=200
+        )
+        
