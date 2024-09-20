@@ -6,6 +6,7 @@ from .exceptions import ServiceException
 from sparky_utils.exceptions import handle_internal_server_exception
 from django.core.exceptions import ValidationError
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.utils import IntegrityError
 
 
 def exception_advice(func):
@@ -28,6 +29,11 @@ def exception_advice(func):
                 return service_response(status="error", message=e.message, status_code=400)
             elif isinstance(e, ObjectDoesNotExist):
                 return service_response(status="error", message=str(e), status_code=404)
+            elif isinstance(e, IntegrityError):
+                message = str(e)
+                if "email" in str(e):
+                    message = "Email already exists"
+                return service_response(status="error", message=message, status_code=409)
             else:
                 return handle_internal_server_exception()
     return wrapper
