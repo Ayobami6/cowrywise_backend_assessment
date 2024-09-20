@@ -93,3 +93,5 @@ pytest
 cd frontend_api
 pytest
 ```
+
+[Documentation](https://www.postman.com/planetary-station-577726/workspace/fun/collection/35174244-c192a57d-b833-4397-82b8-3624334d3730?action=share&creator=35174244)
