@@ -1,4 +1,4 @@
-.PHONY: run-admin
+.PHONY: run-admin run-library
 run-admin:
 	@docker-compose up postgres -d
 	@docker-compose up admin_api 
