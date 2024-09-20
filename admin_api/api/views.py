@@ -35,7 +35,7 @@ class AddBookAPIView(APIView):
             return service_response(
                 status="success", message="Book added successfully", data=serializer.data, status_code=201
             )
-        return service_response(status="success", message=serializer.errors, status_code=400)
+        return service_response(status="error", message=serializer.errors, status_code=400)
 
 
 class BookNotAvailableListAPIView(APIView):
