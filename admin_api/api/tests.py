@@ -5,7 +5,7 @@ from rest_framework import status
 from unittest import mock
 from unittest.mock import patch
 from .models import Category, Book, User, BorrowedBookLog
-from .views import AddBookAPIView, BookNotAvailableListAPIView, ListUsersAPIView
+from .views import AddBookAPIView, BookNotAvailableListAPIView, DeleteBookAPIView, ListUsersAPIView
 from api.publisher import publish_save_book_event
 import pytest
 from datetime import date, timedelta
@@ -195,3 +195,30 @@ def test_get_users_and_their_borrowed_books_with_multiple_books(client, request_
     assert response.data.get("data")[1]["email"] == "user2@gmail.com"
     assert 1 == len(response.data.get("data")[1]["borrowed_books"])
     assert response.data.get("data")[1]["borrowed_books"][0]["book_title"] == "Book 3"
+    
+@pytest.mark.django_db
+def test_delete_book_not_existing(mocker, client, request_factory):
+    url = reverse('delete-book', kwargs={'id': 1})
+    view = DeleteBookAPIView.as_view()
+
+    mocker.patch("api.views.publish_delete_event", return_value=None)
+    request = request_factory.delete(url)
+    response = view(request, id=1)
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+    assert "Book matching query does not exist." in response.data.get("message")
+    
+@pytest.mark.django_db
+def test_delete_book_success(mocker, client, request_factory):
+    """ Delete a book
+    """
+    # create the book object
+    category = Category.objects.create(name='Test Category')
+    book1 = Book.objects.create(title='Book 1', author='Test Author', publisher='Press Ltd', category=category)
+    url = reverse('delete-book', kwargs={'id': book1.id})
+    view = DeleteBookAPIView.as_view()
+    mocker.patch("api.views.publish_delete_event", return_value=None)
+    request = request_factory.delete(url)
+    response = view(request, id=1)
+    assert response.status_code == status.HTTP_204_NO_CONTENT
+    assert "Book deleted successfully" in response.data.get("message")
+    assert "success" == response.data.get("status")
